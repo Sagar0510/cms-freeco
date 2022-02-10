@@ -1,4 +1,6 @@
 import db from "../config/db.js";
+import bcrypt from "bcrypt";
+import session from "express-session";
 
 export function getSignInPage(req, res) {
   res.send({
@@ -7,27 +9,30 @@ export function getSignInPage(req, res) {
 }
 
 export function signInUser(req, res) {
-  let credentials = req.body;
-
-  let userEmail = credentials.email;
-  let userPassword = credentials.password;
-
-  let findUser = `SELECT userid FROM cms.users WHERE email = '${userEmail}' AND password = '${userPassword}'`;
-  db.query(findUser, (err, result) => {
+  let { email, password } = req.body;
+  console.log(email, password);
+  let findUser = `SELECT * FROM cms.users WHERE email = '${email}'`;
+  db.query(findUser, async (err, result) => {
     if (err) {
       res.json({
         error: err.code,
       });
     } else {
-      console.log(result);
+      console.log(email, result);
       if (result.length == 0) {
         res.json({
           error: "INVALID_CREDENTIALS",
           type: "AUTHORIZATION",
         });
       } else {
-        res.cookie("isLoggedIn", true);
-        res.cookie("loggedInUserid", result[0].userid);
+        let valid = await bcrypt.compare(password, result[0].password);
+        if (!valid) {
+          res.json({
+            error: "INVALID_CREDENTIALS",
+            type: "AUTHORIZATION",
+          });
+        }
+        req.session.userid = result[0].userid;
         res.redirect("/index");
       }
     }

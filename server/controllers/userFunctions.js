@@ -1,6 +1,7 @@
 import express, { query } from "express";
 import { v4 as uuidv4 } from "uuid";
 import db from "../config/db.js";
+import bcrypt from "bcrypt";
 
 export function getUsers(req, res) {
   db.query("SELECT userid,email,authorized_by FROM users", (err, results) => {
@@ -13,9 +14,12 @@ export function getUsers(req, res) {
     res.json(results);
   });
 }
-export function postUser(req, res) {
+export async function postUser(req, res) {
   let userid = uuidv4();
-  let sql = `INSERT INTO users VALUES ('${userid}','${req.body.email}','${req.body.password}','${req.cookies.loggedInUserid}')`;
+  const salt = await bcrypt.genSalt(12);
+  let userPassword = await bcrypt.hash(req.body.password, salt);
+  console.log(salt, userPassword);
+  let sql = `INSERT INTO users VALUES ('${userid}','${req.body.email}','${userPassword}','${req.session.userid}')`;
   db.query(sql, (err, results) => {
     if (err) {
       res.json({

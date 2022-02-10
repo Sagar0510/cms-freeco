@@ -1,5 +1,5 @@
 function protectRoute(req, res, next) {
-  if (req.cookies.isLoggedIn) {
+  if (req.session.userid) {
     next();
   } else {
     return res.json({
