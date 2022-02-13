@@ -1,8 +1,14 @@
 import express, { query } from "express";
 import { getUsers, postUser } from "../controllers/userFunctions.js";
-import protectRoute from "../controllers/ProtectHelper.js";
+import {
+  checkLoggedIn,
+  checkPermission,
+} from "../controllers/ProtectHelper.js";
 const userRouter = express.Router();
 
-userRouter.route("/").get(protectRoute, getUsers).post(protectRoute, postUser);
+userRouter
+  .route("/")
+  .get(checkLoggedIn, checkPermission(["admin", "superuser"]), getUsers)
+  .post(checkLoggedIn, checkPermission(["admin"]), postUser);
 
 export default userRouter;
