@@ -11,6 +11,6 @@ userRouter
   .get(checkLoggedIn, checkPermission(["admin", "superuser"]), getUsers)
   .post(checkLoggedIn, checkPermission(["admin"]), postUser);
 
-userRouter.route("/reset-password/:userid").put(putUser);
+userRouter.route("/reset-password/:resetToken").put(putUser);
 
 export default userRouter;

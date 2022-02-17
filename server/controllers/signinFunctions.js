@@ -32,6 +32,13 @@ export function signInUser(req, res) {
             type: "AUTHORIZATION",
           });
         }
+        if (result[0].verified == 0) {
+          res.json({
+            error: "ACCOUNT NOT VERIFIED",
+            message:
+              "Please reset your password from the link provided in mail to verify your account",
+          });
+        }
         req.session.userid = result[0].userid;
         res.redirect("/index");
       }
