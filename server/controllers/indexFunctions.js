@@ -22,7 +22,7 @@ export function postIndex(req, res) {
   let addTable =
     "CREATE TABLE " +
     bookidModified +
-    "(nodeid char(36),type varchar(200),parentid char(36),bookid varchar(200),name varchar(200),page varchar(200),question longtext,answer longtext)";
+    "(nodeid char(36),type varchar(200),parentid char(36),bookid varchar(200),name varchar(200),page varchar(200),question longtext,answer longtext,QC_Remarks longtext)";
   db.query(addTable, (errr, result) => {
     if (errr) {
       res.json({

@@ -2,7 +2,12 @@ import express from "express";
 import { v4 as uuidv4 } from "uuid";
 import db from "../config/db.js";
 import { getIndex, postIndex } from "../controllers/indexFunctions.js";
-import { deleteBook, getTOC, postTOC } from "../controllers/bookFunctions.js";
+import {
+  deleteBook,
+  getTOC,
+  postTOC,
+  postQCremarks,
+} from "../controllers/bookFunctions.js";
 import {
   checkLoggedIn,
   checkPermission,
@@ -30,5 +35,13 @@ indexRouter
   .get(checkLoggedIn, checkPermission(["admin", "superuser"]), getNodeInTOC)
   .put(checkLoggedIn, checkPermission(["admin", "superuser"]), updateTOC)
   .delete(checkLoggedIn, checkPermission(["admin", "superuser"]), deleteTOC);
+
+indexRouter
+  .route("/:bookid/qc/:nodeid")
+  .post(
+    checkLoggedIn,
+    checkPermission(["admin", "quality-checker"]),
+    postQCremarks
+  );
 
 export default indexRouter;
